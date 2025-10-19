@@ -1,0 +1,26 @@
+# ROS 2 Build Files
+build/
+install/
+log/
+*.pyc
+__pycache__/
+
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+
+.gazebo/
+
+.DS_Store
+Thumbs.db
+
+*.db3
+*.bag
+
+*.egg-info/
+dist/
+
