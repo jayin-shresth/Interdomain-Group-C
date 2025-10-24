@@ -1,458 +1,334 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="pipe_bot">
   
-  <!-- Base link -->
+  <link name="base_footprint"/>
+  
   <link name="base_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.3 0.2 0.1"/>
+        <box size="0.30 0.18 0.08"/>
       </geometry>
       <material name="blue">
         <color rgba="0 0 1 1"/>
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.3 0.2 0.1"/>
+        <box size="0.30 0.18 0.08"/>
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <mass value="2.0"/>
-      <inertia ixx="0.01" ixy="0.0" ixz="0.0" iyy="0.01" iyz="0.0" izz="0.01"/>
+      <mass value="8.0"/>
+      <inertia ixx="0.02" ixy="0" ixz="0" iyy="0.03" iyz="0" izz="0.04"/>
     </inertial>
   </link>
   
-  <!-- Gazebo material for base_link -->
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.06" rpy="0 0 0"/>
+  </joint>
+  
   <gazebo reference="base_link">
     <material>Gazebo/Blue</material>
   </gazebo>
   
-  <!-- Front Left Wheel -->
   <link name="wheel_fl">
     <visual>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1"/>
-      </material>
+      <material name="black"><color rgba="0 0 0 1"/></material>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
-      <mass value="0.2"/>
-      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <mass value="0.8"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
   </link>
   
   <gazebo reference="wheel_fl">
-    <mu1>1.0</mu1>
-    <mu2>1.0</mu2>
-    <kp>1000000.0</kp>
-    <kd>100.0</kd>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
     <material>Gazebo/Black</material>
   </gazebo>
   
-  <!-- Front Right Wheel -->
+  <joint name="wheel_fl_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_fl"/>
+    <origin xyz="0.12 0.11 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  
   <link name="wheel_fr">
     <visual>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1"/>
-      </material>
+      <material name="black"><color rgba="0 0 0 1"/></material>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
-      <mass value="0.2"/>
-      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <mass value="0.8"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
   </link>
   
   <gazebo reference="wheel_fr">
-    <mu1>1.0</mu1>
-    <mu2>1.0</mu2>
-    <kp>1000000.0</kp>
-    <kd>100.0</kd>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
     <material>Gazebo/Black</material>
   </gazebo>
   
-  <!-- Rear Left Wheel -->
+  <joint name="wheel_fr_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_fr"/>
+    <origin xyz="0.12 -0.11 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  
   <link name="wheel_rl">
     <visual>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1"/>
-      </material>
+      <material name="black"><color rgba="0 0 0 1"/></material>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
-      <mass value="0.2"/>
-      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <mass value="0.8"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
   </link>
   
   <gazebo reference="wheel_rl">
-    <mu1>1.0</mu1>
-    <mu2>1.0</mu2>
-    <kp>1000000.0</kp>
-    <kd>100.0</kd>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
     <material>Gazebo/Black</material>
   </gazebo>
   
-  <!-- Rear Right Wheel -->
+  <joint name="wheel_rl_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="wheel_rl"/>
+    <origin xyz="-0.12 0.11 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+  
   <link name="wheel_rr">
     <visual>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
-      <material name="black">
-        <color rgba="0 0 0 1"/>
-      </material>
+      <material name="black"><color rgba="0 0 0 1"/></material>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <geometry>
-        <cylinder radius="0.03" length="0.02"/>
+        <cylinder radius="0.06" length="0.04"/>
       </geometry>
     </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
-      <mass value="0.2"/>
-      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+      <mass value="0.8"/>
+      <inertia ixx="0.001" ixy="0" ixz="0" iyy="0.001" iyz="0" izz="0.001"/>
     </inertial>
   </link>
   
   <gazebo reference="wheel_rr">
-    <mu1>1.0</mu1>
-    <mu2>1.0</mu2>
-    <kp>1000000.0</kp>
-    <kd>100.0</kd>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
     <material>Gazebo/Black</material>
   </gazebo>
   
-  <!-- Wheel joints -->
-  <joint name="joint_wheel_fl" type="continuous">
-    <parent link="base_link"/>
-    <child link="wheel_fl"/>
-    <origin xyz="0.12 0.09 -0.05" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-  </joint>
-  
-  <joint name="joint_wheel_fr" type="continuous">
-    <parent link="base_link"/>
-    <child link="wheel_fr"/>
-    <origin xyz="0.12 -0.09 -0.05" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-  </joint>
-  
-  <joint name="joint_wheel_rl" type="continuous">
-    <parent link="base_link"/>
-    <child link="wheel_rl"/>
-    <origin xyz="-0.12 0.09 -0.05" rpy="0 0 0"/>
-    <axis xyz="0 1 0"/>
-  </joint>
-  
-  <joint name="joint_wheel_rr" type="continuous">
+  <joint name="wheel_rr_joint" type="continuous">
     <parent link="base_link"/>
     <child link="wheel_rr"/>
-    <origin xyz="-0.12 -0.09 -0.05" rpy="0 0 0"/>
+    <origin xyz="-0.12 -0.11 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
   </joint>
   
-  <!-- Front Ultrasonic Sensor Link -->
   <link name="ultrasonic_front">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.02 0.04 0.015"/>
+        <box size="0.02 0.03 0.01"/>
       </geometry>
-      <material name="silver">
-        <color rgba="0.7 0.7 0.7 1"/>
-      </material>
+      <material name="red"><color rgba="1 0 0 1"/></material>
     </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.02 0.04 0.015"/>
-      </geometry>
-    </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="0.01"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
     </inertial>
   </link>
   
-  <gazebo reference="ultrasonic_front">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  
-  <!-- Front Ultrasonic Sensor Joint -->
   <joint name="ultrasonic_front_joint" type="fixed">
     <parent link="base_link"/>
     <child link="ultrasonic_front"/>
-    <origin xyz="0.18 0 0.02" rpy="0 0 0"/>
+    <origin xyz="0.16 0 0.02" rpy="0 0 0"/>
   </joint>
   
-  <!-- Front Ultrasonic Sensor Plugin -->
   <gazebo reference="ultrasonic_front">
+    <material>Gazebo/Red</material>
     <sensor type="ray" name="ultrasonic_front_sensor">
-      <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>10</update_rate>
       <ray>
         <scan>
           <horizontal>
-            <samples>5</samples>
-            <resolution>1</resolution>
-            <min_angle>-0.12</min_angle>
-            <max_angle>0.12</max_angle>
+            <samples>3</samples>
+            <min_angle>-0.1</min_angle>
+            <max_angle>0.1</max_angle>
           </horizontal>
-          <vertical>
-            <samples>5</samples>
-            <resolution>1</resolution>
-            <min_angle>-0.12</min_angle>
-            <max_angle>0.12</max_angle>
-          </vertical>
         </scan>
         <range>
-          <min>0.02</min>
+          <min>0.05</min>
           <max>4.0</max>
-          <resolution>0.01</resolution>
         </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.01</stddev>
-        </noise>
       </ray>
-      <plugin name="gazebo_ros_ultrasonic_front" filename="libgazebo_ros_ray_sensor.so">
+      <plugin name="ultrasonic_front_plugin" filename="libgazebo_ros_ray_sensor.so">
         <ros>
           <namespace>/pipe_bot</namespace>
           <remapping>~/out:=ultrasonic_front</remapping>
         </ros>
         <output_type>sensor_msgs/Range</output_type>
+        <radiation_type>ultrasound</radiation_type>
         <frame_name>ultrasonic_front</frame_name>
       </plugin>
     </sensor>
   </gazebo>
   
-  <!-- Left Ultrasonic Sensor Link -->
   <link name="ultrasonic_left">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.04 0.02 0.015"/>
+        <box size="0.03 0.02 0.01"/>
       </geometry>
-      <material name="silver">
-        <color rgba="0.7 0.7 0.7 1"/>
-      </material>
+      <material name="red"><color rgba="1 0 0 1"/></material>
     </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.04 0.02 0.015"/>
-      </geometry>
-    </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="0.01"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
     </inertial>
   </link>
   
-  <gazebo reference="ultrasonic_left">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  
-  <!-- Left Ultrasonic Sensor Joint -->
   <joint name="ultrasonic_left_joint" type="fixed">
     <parent link="base_link"/>
     <child link="ultrasonic_left"/>
-    <origin xyz="0 0.11 0" rpy="0 0 1.5708"/>
+    <origin xyz="0.08 0.10 0.02" rpy="0 0 1.5708"/>
   </joint>
   
-  <!-- Left Ultrasonic Sensor Plugin -->
   <gazebo reference="ultrasonic_left">
+    <material>Gazebo/Red</material>
     <sensor type="ray" name="ultrasonic_left_sensor">
-      <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>10</update_rate>
       <ray>
         <scan>
           <horizontal>
-            <samples>5</samples>
-            <resolution>1</resolution>
-            <min_angle>-0.12</min_angle>
-            <max_angle>0.12</max_angle>
+            <samples>3</samples>
+            <min_angle>-0.1</min_angle>
+            <max_angle>0.1</max_angle>
           </horizontal>
-          <vertical>
-            <samples>5</samples>
-            <resolution>1</resolution>
-            <min_angle>-0.12</min_angle>
-            <max_angle>0.12</max_angle>
-          </vertical>
         </scan>
         <range>
-          <min>0.02</min>
+          <min>0.05</min>
           <max>4.0</max>
-          <resolution>0.01</resolution>
         </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.01</stddev>
-        </noise>
       </ray>
-      <plugin name="gazebo_ros_ultrasonic_left" filename="libgazebo_ros_ray_sensor.so">
+      <plugin name="ultrasonic_left_plugin" filename="libgazebo_ros_ray_sensor.so">
         <ros>
           <namespace>/pipe_bot</namespace>
           <remapping>~/out:=ultrasonic_left</remapping>
         </ros>
         <output_type>sensor_msgs/Range</output_type>
+        <radiation_type>ultrasound</radiation_type>
         <frame_name>ultrasonic_left</frame_name>
       </plugin>
     </sensor>
   </gazebo>
   
-  <!-- Right Ultrasonic Sensor Link -->
   <link name="ultrasonic_right">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.04 0.02 0.015"/>
+        <box size="0.03 0.02 0.01"/>
       </geometry>
-      <material name="silver">
-        <color rgba="0.7 0.7 0.7 1"/>
-      </material>
+      <material name="red"><color rgba="1 0 0 1"/></material>
     </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.04 0.02 0.015"/>
-      </geometry>
-    </collision>
     <inertial>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
       <mass value="0.01"/>
-      <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
     </inertial>
   </link>
   
-  <gazebo reference="ultrasonic_right">
-    <material>Gazebo/Grey</material>
-  </gazebo>
-  
-  <!-- Right Ultrasonic Sensor Joint -->
   <joint name="ultrasonic_right_joint" type="fixed">
     <parent link="base_link"/>
     <child link="ultrasonic_right"/>
-    <origin xyz="0 -0.11 0" rpy="0 0 -1.5708"/>
+    <origin xyz="0.08 -0.10 0.02" rpy="0 0 -1.5708"/>
   </joint>
   
-  <!-- Right Ultrasonic Sensor Plugin -->
   <gazebo reference="ultrasonic_right">
+    <material>Gazebo/Red</material>
     <sensor type="ray" name="ultrasonic_right_sensor">
-      <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>10</update_rate>
       <ray>
         <scan>
           <horizontal>
-            <samples>5</samples>
-            <resolution>1</resolution>
-            <min_angle>-0.12</min_angle>
-            <max_angle>0.12</max_angle>
+            <samples>3</samples>
+            <min_angle>-0.1</min_angle>
+            <max_angle>0.1</max_angle>
           </horizontal>
-          <vertical>
-            <samples>5</samples>
-            <resolution>1</resolution>
-            <min_angle>-0.12</min_angle>
-            <max_angle>0.12</max_angle>
-          </vertical>
         </scan>
         <range>
-          <min>0.02</min>
+          <min>0.05</min>
           <max>4.0</max>
-          <resolution>0.01</resolution>
         </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.01</stddev>
-        </noise>
       </ray>
-      <plugin name="gazebo_ros_ultrasonic_right" filename="libgazebo_ros_ray_sensor.so">
+      <plugin name="ultrasonic_right_plugin" filename="libgazebo_ros_ray_sensor.so">
         <ros>
           <namespace>/pipe_bot</namespace>
           <remapping>~/out:=ultrasonic_right</remapping>
         </ros>
         <output_type>sensor_msgs/Range</output_type>
+        <radiation_type>ultrasound</radiation_type>
         <frame_name>ultrasonic_right</frame_name>
       </plugin>
     </sensor>
   </gazebo>
   
-  <!-- Differential Drive Plugin -->
   <gazebo>
-    <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
-      
-      <!-- Update rate in Hz -->
+    <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
       <update_rate>50</update_rate>
-      
-      <!-- Wheels (only specify front wheels) -->
-      <left_joint>joint_wheel_fl</left_joint>
-      <right_joint>joint_wheel_fr</right_joint>
-      
-      <!-- Kinematics -->
-      <wheel_separation>0.18</wheel_separation>
-      <wheel_diameter>0.06</wheel_diameter>
-      
-      <!-- Limits -->
-      <max_wheel_torque>20</max_wheel_torque>
-      <max_wheel_acceleration>1.0</max_wheel_acceleration>
-      
-      <!-- Input -->
+      <left_joint>wheel_fl_joint</left_joint>
+      <right_joint>wheel_fr_joint</right_joint>
+      <wheel_separation>0.22</wheel_separation>
+      <wheel_diameter>0.12</wheel_diameter>
+      <max_wheel_torque>200</max_wheel_torque>
+      <max_wheel_acceleration>10.0</max_wheel_acceleration>
       <command_topic>cmd_vel</command_topic>
-      
-      <!-- Output -->
       <publish_odom>true</publish_odom>
       <publish_odom_tf>true</publish_odom_tf>
-      <publish_wheel_tf>false</publish_wheel_tf>
-      
       <odometry_topic>odom</odometry_topic>
       <odometry_frame>odom</odometry_frame>
-      <robot_base_frame>base_link</robot_base_frame>
-      
+      <robot_base_frame>base_footprint</robot_base_frame>
     </plugin>
   </gazebo>
   
 </robot>
+

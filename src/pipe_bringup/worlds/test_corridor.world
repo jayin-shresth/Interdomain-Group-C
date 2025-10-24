@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <sdf version="1.6">
-  <world name="pipe_world">
-    
+  <world name="test_corridor">
     <physics type="ode">
       <real_time_update_rate>1000.0</real_time_update_rate>
       <max_step_size>0.001</max_step_size>
@@ -18,10 +17,8 @@
     <scene>
       <ambient>0.6 0.6 0.6 1</ambient>
       <background>0.7 0.7 0.7 1</background>
-      <shadows>true</shadows>
     </scene>
 
-    <!-- Ground -->
     <model name="ground_plane">
       <static>true</static>
       <link name="link">
@@ -48,7 +45,6 @@
       </link>
     </model>
 
-    <!-- Left Wall -->
     <model name="left_wall">
       <static>true</static>
       <pose>5 0.5 0.5 0 0 0</pose>
@@ -56,25 +52,24 @@
         <collision name="collision">
           <geometry>
             <box>
-              <size>10 0.2 1</size>
+              <size>10 0.1 1</size>
             </box>
           </geometry>
         </collision>
         <visual name="visual">
           <geometry>
             <box>
-              <size>10 0.2 1</size>
+              <size>10 0.1 1</size>
             </box>
           </geometry>
           <material>
-            <ambient>0.8 0.2 0.2 1</ambient>
-            <diffuse>0.8 0.2 0.2 1</diffuse>
+            <ambient>1 0 0 1</ambient>
+            <diffuse>1 0 0 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
 
-    <!-- Right Wall -->
     <model name="right_wall">
       <static>true</static>
       <pose>5 -0.5 0.5 0 0 0</pose>
@@ -82,45 +77,44 @@
         <collision name="collision">
           <geometry>
             <box>
-              <size>10 0.2 1</size>
+              <size>10 0.1 1</size>
             </box>
           </geometry>
         </collision>
         <visual name="visual">
           <geometry>
             <box>
-              <size>10 0.2 1</size>
+              <size>10 0.1 1</size>
             </box>
           </geometry>
           <material>
-            <ambient>0.2 0.8 0.2 1</ambient>
-            <diffuse>0.2 0.8 0.2 1</diffuse>
+            <ambient>0 1 0 1</ambient>
+            <diffuse>0 1 0 1</diffuse>
           </material>
         </visual>
       </link>
     </model>
 
-    <!-- Front Wall (obstacle) -->
-    <model name="front_wall">
+    <model name="end_wall">
       <static>true</static>
-      <pose>9 0 0.5 0 0 0</pose>
+      <pose>9.5 0 0.5 0 0 0</pose>
       <link name="link">
         <collision name="collision">
           <geometry>
             <box>
-              <size>0.2 1.2 1</size>
+              <size>0.1 1.2 1</size>
             </box>
           </geometry>
         </collision>
         <visual name="visual">
           <geometry>
             <box>
-              <size>0.2 1.2 1</size>
+              <size>0.1 1.2 1</size>
             </box>
           </geometry>
           <material>
-            <ambient>0.8 0.8 0.2 1</ambient>
-            <diffuse>0.8 0.8 0.2 1</diffuse>
+            <ambient>1 1 0 1</ambient>
+            <diffuse>1 1 0 1</diffuse>
           </material>
         </visual>
       </link>

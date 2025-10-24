@@ -6,28 +6,21 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
-    # Package share path
     pkg_share = FindPackageShare('pipe_bringup').find('pipe_bringup')
-    
-    # Paths to URDF and world
     urdf_file = os.path.join(pkg_share, 'urdf', 'pipe_bot.urdf.xacro')
-    world_file = os.path.join(pkg_share, 'worlds', 'pipe_world.world')
-    
-    # Process xacro to URDF (note the space after 'xacro')
+    world_file = os.path.join(pkg_share, 'worlds', 'test_corridor.world')
     robot_description = Command(['xacro ', urdf_file])
-    
-    # Gazebo server and client
+
     gzserver = ExecuteProcess(
         cmd=['gzserver', '--verbose', world_file, '-s', 'libgazebo_ros_factory.so'],
         output='screen'
     )
-    
+
     gzclient = ExecuteProcess(
         cmd=['gzclient'],
         output='screen'
     )
-    
-    # Robot State Publisher
+
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -38,25 +31,23 @@ def generate_launch_description():
             'use_sim_time': True
         }]
     )
-    
-    # Spawn robot
+
     spawn_robot = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
         arguments=[
             '-entity', 'pipe_bot',
             '-topic', 'robot_description',
-            '-x', '0.0',
+            '-x', '1.0',
             '-y', '0.0',
-            '-z', '0.2',  # Higher spawn position
+            '-z', '0.1',
             '-Y', '0.0'
         ],
         output='screen'
     )
-    
-    # Centering controller (delayed start to ensure robot is spawned)
+
     centering_controller = TimerAction(
-        period=5.0,
+        period=3.0,
         actions=[
             Node(
                 package='pipe_bringup',
@@ -67,7 +58,7 @@ def generate_launch_description():
             )
         ]
     )
-    
+
     return LaunchDescription([
         gzserver,
         gzclient,
@@ -75,3 +66,4 @@ def generate_launch_description():
         spawn_robot,
         centering_controller
     ])
+
