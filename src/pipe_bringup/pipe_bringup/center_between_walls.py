@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
@@ -8,29 +7,21 @@ import time
 class CenteringController(Node):
     def __init__(self):
         super().__init__('centering_controller')
-        
-        # Wait for Gazebo
-        time.sleep(1.0)
-        
-        # Create publisher with larger queue
+        time.sleep(1.0)  # wait gazebo
         self.cmd_pub = self.create_publisher(Twist, '/cmd_vel', 100)
-        
-        # Give time for connections
-        time.sleep(0.5)
-        
-        # Send initial test message
-        for i in range(5):
+        time.sleep(0.5)  # wait connect
+
+        for i in range(5):  # test msgs
             cmd = Twist()
             cmd.linear.x = 0.3
             self.cmd_pub.publish(cmd)
             self.get_logger().info(f'Initial publish #{i+1}')
             time.sleep(0.1)
-        
-        # Now start timer
+
         self.timer = self.create_timer(0.2, self.control_loop)
         self.counter = 0
-        self.get_logger().info('Controller fully initialized!')
-    
+        self.get_logger().info('Controller ready')
+
     def control_loop(self):
         self.counter += 1
         cmd = Twist()
