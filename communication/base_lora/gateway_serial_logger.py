@@ -1,131 +1,154 @@
 #!/usr/bin/env python3
+"""
+gateway_serial_logger.py
+----------------------------------------
+LoRa Gateway Logger for Pipe Rover Project
 
+- Reads serial output from Base ESP32
+- Handles two message types:
+   [HB] seq,batt,rssi,ts    -> Heartbeat telemetry
+   [LOG] chunkId:payload    -> Mission log data
+- Publishes Heartbeat telemetry to MQTT
+- Saves telemetry and mission logs to CSV files
+----------------------------------------
+"""
 
 import argparse
-import csv
-import json
-import time
-import threading
 import serial
+import time
+import json
+import os
+import re
+from datetime import datetime
 import paho.mqtt.client as mqtt
 
-def parse_line(line):
-    # tolerant parser for HB and ANAL lines
-    line = line.strip()
-    if not line: 
-        return None
-    parts = line.split(',')
-    if parts[0].upper() == 'HB':
-        # example parts: HB,ts,DEVICE=0x0101,SEQ=125,BATT=84,RSSI=-72
-        data = {'type':'HB'}
-        try:
-            data['ts'] = parts[1]
-            for p in parts[2:]:
-                if '=' in p:
-                    k,v = p.split('=',1)
-                    data[k.strip().lower()] = v.strip()
-        except Exception as e:
-            data['raw'] = line
-        return data
-    elif parts[0].upper() in ('ANAL','ANALYSIS'):
-        data = {'type':'ANAL'}
-        try:
-            data['ts'] = parts[1]
-            for p in parts[2:]:
-                if '=' in p:
-                    k,v = p.split('=',1)
-                    data[k.strip().lower()] = v.strip()
-        except Exception as e:
-            data['raw'] = line
-        return data
-    else:
-        # generic fallback
-        return {'type':'RAW','raw':line, 'ts': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}
+# ---------- ARGUMENTS ----------
+parser = argparse.ArgumentParser(description="LoRa Gateway Serial Logger")
+parser.add_argument("--port", required=True, help="Serial port (e.g., /dev/ttyUSB0)")
+parser.add_argument("--baud", type=int, default=115200, help="Baud rate (default 115200)")
+parser.add_argument("--mqtt", default="localhost", help="MQTT broker host")
+parser.add_argument("--topic", default="pipe/telemetry", help="MQTT telemetry topic")
+args = parser.parse_args()
 
-def worker_serial_read(serial_port, csv_writer, csv_lock, mqtt_client, mqtt_topic):
-    while True:
-        try:
-            line = serial_port.readline().decode(errors='ignore').strip()
-            if not line:
-                continue
-            parsed = parse_line(line)
-            # write to CSV
-            with csv_lock:
-                if parsed['type']=='HB':
-                    csv_writer.writerow({
-                        'ts': parsed.get('ts',''),
-                        'type':'HB',
-                        'device': parsed.get('device',''),
-                        'seq': parsed.get('seq',''),
-                        'batt': parsed.get('batt',''),
-                        'rssi': parsed.get('rssi','')
-                    })
-                elif parsed['type']=='ANAL':
-                    csv_writer.writerow({
-                        'ts': parsed.get('ts',''),
-                        'type':'ANAL',
-                        'device': parsed.get('device',''),
-                        'seq': parsed.get('seq',''),
-                        'ph': parsed.get('ph',''),
-                        'turb': parsed.get('turb',''),
-                        'atp': parsed.get('atp',''),
-                        'flags': parsed.get('flags','')
-                    })
-                else:
-                    csv_writer.writerow({
-                        'ts': parsed.get('ts',''),
-                        'type': parsed.get('type','RAW'),
-                        'raw': parsed.get('raw','')
-                    })
-                serial_port.flush()
-            # publish to MQTT
-            try:
-                mqtt_client.publish(mqtt_topic, json.dumps(parsed))
-            except Exception:
-                pass
-            print(line)
-        except Exception as e:
-            print("Serial read error:", e)
-            time.sleep(0.5)
+# ---------- SETUP PATHS ----------
+os.makedirs("logs", exist_ok=True)
+telemetry_csv = os.path.join("logs", "telemetry_log.csv")
+mission_csv = os.path.join("logs", "received_mission_log.csv")
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument('--port','-p', default='/dev/ttyUSB0')
-    ap.add_argument('--baud', type=int, default=115200)
-    ap.add_argument('--csv', default='telemetry.csv')
-    ap.add_argument('--mqtt', default='localhost')
-    ap.add_argument('--topic', default='pipe/telemetry')
-    args = ap.parse_args()
+# ---------- MQTT CLIENT ----------
+client = mqtt.Client()
+client.connect(args.mqtt, 1883, 60)
+client.loop_start()
 
-    # open serial
-    ser = serial.Serial(args.port, args.baud, timeout=1)
-    time.sleep(2)  # allow device reset
-
-    # open csv for appending
-    csvfile = open(args.csv, 'a', newline='')
-    fieldnames = ['ts','type','device','seq','batt','rssi','ph','turb','atp','flags','raw']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    # write header if file empty
+# ---------- SERIAL ----------
+def open_serial():
     try:
-        csvfile.seek(0)
-        if csvfile.read(1) == '':
-            writer.writeheader()
-    except Exception:
-        pass
-
-    csv_lock = threading.Lock()
-
-    # MQTT client
-    client = mqtt.Client()
-    try:
-        client.connect(args.mqtt, 1883, 60)
-        client.loop_start()
+        return serial.Serial(args.port, args.baud, timeout=1)
     except Exception as e:
-        print("MQTT connect failed:", e)
+        print(f"[{datetime.now().isoformat()}] ❌ Serial open failed: {e}")
+        return None
 
-    print("Starting serial reader on", args.port)
-    worker_serial_read(ser, writer, csv_lock, client, args.topic)
+ser = open_serial()
+time.sleep(1)
 
-if __name__ == '__main__':
-    main()
+# ---------- REGEX MATCHERS ----------
+hb_re = re.compile(r'^\[HB\]\s*(\d+),\s*(\d+),\s*(-?\d+),\s*(\d+)\s*$')
+log_re = re.compile(r'^\[LOG\]\s*(.*)$', re.DOTALL)
+
+# ---------- CSV HEADERS ----------
+if not os.path.exists(telemetry_csv):
+    with open(telemetry_csv, "w") as f:
+        f.write("timestamp,seq,batt,rssi\n")
+
+if not os.path.exists(mission_csv):
+    with open(mission_csv, "w") as f:
+        f.write("seq,phase,x,y,heading,ph,turb,batt,ts\n")
+
+# ---------- UTILITY ----------
+def now_str():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+def append_mission_chunk(payload):
+    """Append LOG payloads to mission log file"""
+    with open(mission_csv, "a") as f:
+        f.write(payload.strip() + "\n")
+    print(f"[{now_str()}] 📄 Added mission log chunk ({len(payload)} bytes)")
+
+def append_telemetry(seq, batt, rssi):
+    """Append heartbeat telemetry"""
+    with open(telemetry_csv, "a") as f:
+        f.write(f"{datetime.utcnow().isoformat()},{seq},{batt},{rssi}\n")
+
+# ---------- MAIN LOOP ----------
+print(f"[{now_str()}]  Gateway started")
+print(f"Serial: {args.port} @ {args.baud}")
+print(f"MQTT Broker: {args.mqtt}")
+print(f"Logging to: {telemetry_csv} and {mission_csv}\n")
+
+while True:
+    try:
+        if ser is None or not ser.is_open:
+            print(f"[{now_str()}]  Reconnecting serial...")
+            time.sleep(2)
+            ser = open_serial()
+            continue
+
+        line = ser.readline().decode(errors="ignore").strip()
+        if not line:
+            continue
+
+        # ---- HEARTBEAT ----
+        m = hb_re.match(line)
+        if m:
+            seq = int(m.group(1))
+            batt = int(m.group(2))
+            rssi = int(m.group(3))
+            ts = int(m.group(4))
+
+            hb_data = {
+                "type": "HB",
+                "seq": seq,
+                "batt": batt,
+                "rssi": rssi,
+                "ts": ts,
+                "iso_time": datetime.utcnow().isoformat() + "Z"
+            }
+
+            # MQTT publish
+            client.publish(args.topic, json.dumps(hb_data))
+            append_telemetry(seq, batt, rssi)
+            print(f"[{now_str()}]  HB seq={seq}, batt={batt}%, rssi={rssi}")
+            continue
+
+        # ---- LOG CHUNK ----
+        m2 = log_re.match(line)
+        if m2:
+            payload = m2.group(1)
+            # Remove chunkId if present
+            if ":" in payload:
+                _, data = payload.split(":", 1)
+            else:
+                data = payload
+            append_mission_chunk(data)
+            continue
+
+        # ---- OTHER LINES ----
+        if line.startswith("[RAW]"):
+            print(f"[{now_str()}]  RAW:", line)
+        else:
+            print(f"[{now_str()}]  {line}")
+
+    except KeyboardInterrupt:
+        print(f"\n[{now_str()}] 🛑 Stopping gateway...")
+        break
+    except Exception as e:
+        print(f"[{now_str()}] ⚠️ Error: {e}")
+        time.sleep(1)
+
+# ---------- CLEANUP ----------
+client.loop_stop()
+client.disconnect()
+if ser and ser.is_open:
+    ser.close()
+print(f"[{now_str()}] ✅ Gateway exited cleanly.")
 
