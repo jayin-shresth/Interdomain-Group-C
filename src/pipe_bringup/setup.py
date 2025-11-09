@@ -29,6 +29,9 @@ setup(
             'gps_guided_navigator = pipe_bringup.gps_guided_navigator:main',
             'topological_mapper = pipe_bringup.topological_mapper:main',
             'center_between_walls = pipe_bringup.center_between_walls:main',
+            'esp32_interface = pipe_bringup.esp32_interface:main',
+            'junction_detector_hardware = pipe_bringup.junction_detector_hardware:main',
+            'ultrasonic_to_odometry = pipe_bringup.ultrasonic_to_odometry:main',
         ],
     },
 )
