@@ -4,23 +4,23 @@ TEAM C AUTONOMOUS PIPE EXPLORATION ROBOT
 
 ---
 
-## 🧠 Overview
+##  Overview
 This project presents an **autonomous pipe exploration robot** designed to navigate through confined pipeline systems.  
 It intelligently explores unknown paths using a **breadcrumb tracking system**, a **greedy algorithm** for optimal path selection, and a **reverse navigation** method to safely return to its starting point.
 
 ---
 
-## ⚙️ Features
-- 🚀 **Autonomous Navigation** – Moves through pipes without manual control.
-- 🍞 **Breadcrumb Tracking** – Marks visited nodes to prevent redundant traversal.
-- 🧭 **Greedy Algorithm** – Chooses the nearest unexplored node to ensure efficient coverage.
-- 🔁 **Reverse Navigation** – Uses stored breadcrumbs to return safely.
-- 📡 **Sensor-Based Detection** – Ultrasonic and IR sensors for obstacle avoidance and turn detection.
-- 💾 **Data Logging** – Records exploration paths and sensor data for post-run analysis.
+##  Features
+-  **Autonomous Navigation** – Moves through pipes without manual control.
+- **Breadcrumb Tracking** – Marks visited nodes to prevent redundant traversal.
+-  **Greedy Algorithm** – Chooses the nearest unexplored node to ensure efficient coverage.
+-  **Reverse Navigation** – Uses stored breadcrumbs to return safely.
+-  **Sensor-Based Detection** – Ultrasonic and IR sensors for obstacle avoidance and turn detection.
+-  **Data Logging** – Records exploration paths and sensor data for post-run analysis.
 
 ---
 
-## 🧩 System Architecture
+##  System Architecture
 | Component | Function |
 |------------|-----------|
 | **MCU** | Core control unit (Arduino/ESP32) handling movement and sensor input |
@@ -31,7 +31,7 @@ It intelligently explores unknown paths using a **breadcrumb tracking system**, 
 
 ---
 
-## 🧮 Algorithms Used
+##  Algorithms Used
 ### 1. **Breadcrumb Algorithm**
 Stores each node visited by the robot as a “breadcrumb.” Prevents revisiting the same location and enables return path reconstruction.
 
@@ -43,7 +43,7 @@ Retraces the path using stored breadcrumbs in reverse order to safely return to 
 
 ---
 
-## 🧠 Working Principle
+##  Working Principle
 1. The robot begins exploration from a **base node**.
 2. Sensors detect the pipe’s geometry and available directions.
 3. Each move is logged using **breadcrumbs**.
@@ -52,7 +52,7 @@ Retraces the path using stored breadcrumbs in reverse order to safely return to 
 
 ---
 
-## 🔧 Hardware Requirements
+##  Hardware Requirements
 - Arduino Uno / ESP32
 - Motor driver (L298N)
 - Ultrasonic sensor (HC-SR04)
@@ -61,7 +61,7 @@ Retraces the path using stored breadcrumbs in reverse order to safely return to 
 
 ---
 
-## 💻 Software Requirements
+##  Software Requirements
 - Arduino IDE / PlatformIO
 - C / C++ firmware for control logic
 - Python (for simulation or data visualization, optional)
@@ -106,7 +106,7 @@ It uses **LoRa RA-02 (SX1278)** modules for long-range, low-power communication.
 
 ---
 
-## 🧰 Hardware Used
+##  Hardware Used
 
 | Component | Quantity | Description |
 |------------|-----------|-------------|
@@ -185,4 +185,4 @@ Runs on your laptop:
   <img src="/home/swetank/Interdomain-Group-C/images/heartbeat_sim.png" alt="heartbeat simulation" width="500"><br>
   <em>Figure 2: heartbeat simulation</em>
 </p>
-
+![Dashboard View](https://drive.google.com/file/d/1Tfxm-45N6z6B2RnTjizABzO9jLOmkOud/view?usp=sharing)
